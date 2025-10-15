@@ -74,9 +74,12 @@ public:
     };
 
     // Configure QoS based on profile
-    rclcpp::QoS qos = (qos_profile == QosProfile::CAMERA_SENSOR)
-      ? rclcpp::QoS(rclcpp::KeepLast(1)).reliability(rclcpp::ReliabilityPolicy::BestEffort)
-      : rclcpp::QoS(rclcpp::KeepLast(queue_size));
+    rclcpp::QoS qos(rclcpp::KeepLast(queue_size));
+    if (qos_profile == QosProfile::CAMERA_SENSOR) {
+      // Use BEST_EFFORT reliability and depth=1 for low-latency camera data
+      qos = rclcpp::QoS(rclcpp::KeepLast(1));
+      qos.reliability(rclcpp::ReliabilityPolicy::BestEffort);
+    }
 
     std::shared_ptr<rclcpp::Publisher<ROS_T>> publisher =
       ros_node->create_publisher<ROS_T>(topic_name, qos, options);
