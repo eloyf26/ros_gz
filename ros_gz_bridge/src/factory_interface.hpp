@@ -24,6 +24,8 @@
 // include ROS 2
 #include <rclcpp/rclcpp.hpp>
 
+#include <ros_gz_bridge/bridge_config.hpp>
+
 namespace ros_gz_bridge
 {
 
@@ -37,7 +39,8 @@ public:
   create_ros_publisher(
     rclcpp::Node::SharedPtr ros_node,
     const std::string & topic_name,
-    size_t queue_size) = 0;
+    size_t queue_size,
+    QosProfile qos_profile = kDefaultQosProfile) = 0;
 
   virtual
   gz::transport::Node::Publisher

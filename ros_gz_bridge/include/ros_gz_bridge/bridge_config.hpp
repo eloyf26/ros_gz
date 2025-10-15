@@ -42,6 +42,16 @@ static constexpr bool kDefaultLazy = false;
 // \brief Default bridge connectivity
 static constexpr BridgeDirection kDefaultDirection = BridgeDirection::BIDIRECTIONAL;
 
+/// \brief Enumeration for QoS profiles
+enum class QosProfile
+{
+  DEFAULT = 0,       // Use default ROS2 QoS (RELIABLE)
+  CAMERA_SENSOR = 1  // BEST_EFFORT for low-latency camera data
+};
+
+// \brief Default QoS profile
+static constexpr QosProfile kDefaultQosProfile = QosProfile::DEFAULT;
+
 struct BridgeConfig
 {
   /// \brief The ROS message type (eg std_msgs/msg/String)
@@ -68,6 +78,9 @@ struct BridgeConfig
 
   /// \brief Flag to change the "laziness" of the bridge
   bool is_lazy = kDefaultLazy;
+
+  /// \brief QoS profile for this bridge
+  QosProfile qos_profile = kDefaultQosProfile;
 };
 
 /// \brief Generate a group of BridgeConfigs from a YAML String
