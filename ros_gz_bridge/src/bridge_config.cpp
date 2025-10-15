@@ -34,11 +34,15 @@ constexpr const char kDirection[] = "direction";
 constexpr const char kPublisherQueue[] = "publisher_queue";
 constexpr const char kSubscriberQueue[] = "subscriber_queue";
 constexpr const char kLazy[] = "lazy";
+constexpr const char kQosProfile[] = "qos_profile";
 
 // Comparison strings for bridge directions
 constexpr const char kBidirectional[] = "BIDIRECTIONAL";
 constexpr const char kGzToRos[] = "GZ_TO_ROS";
 constexpr const char kRosToGz[] = "ROS_TO_GZ";
+
+// Comparison strings for QoS profiles
+constexpr const char kCameraSensor[] = "CAMERA_SENSOR";
 
 /// \TODO(mjcarroll) Remove these in releases past Humble/Garden
 constexpr const char kIgnTypeName[] = "ign_type_name";
@@ -163,6 +167,18 @@ std::optional<BridgeConfig> parseEntry(const YAML::Node & yaml_node)
   }
   if (yaml_node[kLazy]) {
     ret.is_lazy = yaml_node[kLazy].as<bool>();
+  }
+
+  if (yaml_node[kQosProfile]) {
+    auto qosStr = yaml_node[kQosProfile].as<std::string>();
+    if (qosStr == kCameraSensor) {
+      ret.qos_profile = QosProfile::CAMERA_SENSOR;
+    } else {
+      RCLCPP_WARN(
+        logger,
+        "Unknown QoS profile [%s], using DEFAULT", qosStr.c_str());
+      ret.qos_profile = QosProfile::DEFAULT;
+    }
   }
 
   return ret;

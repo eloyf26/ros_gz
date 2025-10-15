@@ -28,6 +28,7 @@
 #include <rclcpp/subscription_options.hpp>
 
 #include "factory_interface.hpp"
+#include <ros_gz_bridge/bridge_config.hpp>
 
 template<class T, class = void>
 struct has_header : std::false_type
@@ -58,7 +59,8 @@ public:
   create_ros_publisher(
     rclcpp::Node::SharedPtr ros_node,
     const std::string & topic_name,
-    size_t queue_size)
+    size_t queue_size,
+    QosProfile qos_profile = kDefaultQosProfile)
   {
     // Allow QoS overriding
     auto options = rclcpp::PublisherOptions();
@@ -71,9 +73,16 @@ public:
       },
     };
 
+    // Configure QoS based on profile
+    rclcpp::QoS qos(rclcpp::KeepLast(queue_size));
+    if (qos_profile == QosProfile::CAMERA_SENSOR) {
+      // Use BEST_EFFORT reliability and depth=1 for low-latency camera data
+      qos.reliability(rclcpp::ReliabilityPolicy::BestEffort);
+      qos.keep_last(1);
+    }
+
     std::shared_ptr<rclcpp::Publisher<ROS_T>> publisher =
-      ros_node->create_publisher<ROS_T>(
-      topic_name, rclcpp::QoS(rclcpp::KeepLast(queue_size)), options);
+      ros_node->create_publisher<ROS_T>(topic_name, qos, options);
     return publisher;
   }
 
