@@ -14,6 +14,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 # TODO(CH3): Deprecated. Remove on tock.
 if("$ENV{GZ_VERSION}" STREQUAL "" AND NOT "$ENV{IGNITION_VERSION}" STREQUAL "")
@@ -140,6 +141,7 @@ add_library(${bridge_lib}
 target_link_libraries(${bridge_lib}
   ${GZ_TARGET_PREFIX}-msgs${GZ_MSGS_VER}::core
   ${GZ_TARGET_PREFIX}-transport${GZ_TRANSPORT_VER}::core
+  yaml-cpp
 )
 
 ament_target_dependencies(${bridge_lib}
@@ -161,6 +163,7 @@ target_include_directories(${bridge_lib}
 target_link_libraries(${bridge_lib}
   ${GZ_TARGET_PREFIX}-msgs${GZ_MSGS_VER}::core
   ${GZ_TARGET_PREFIX}-transport${GZ_TRANSPORT_VER}::core
+  yaml-cpp
 )
 
 rclcpp_components_register_node(
